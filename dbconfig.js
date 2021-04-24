@@ -1,7 +1,7 @@
 
 const config = {
-    user :'foo',
-    password :'foo',
+    user :'baibhav',
+    password :'baibhav',
     server:'127.0.0.1',
     database:'Products',
     options:{

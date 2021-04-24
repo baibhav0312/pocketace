@@ -1,11 +1,9 @@
-class Order{
-    constructor(Id,Title,Quantity,Message,City){
-        this.Id = Id; 
-        this.Title = Title; 
-        this.Quantity = Quantity;
-        this.Message = Message;
-        this.City = City; 
+class car{
+    constructor(Amount, Type, Parent_ID){
+        this.Amount = Amount;
+        this.Type = Type; 
+        this.Parent_ID = Parent_ID;  
     }
 }
 
-module.exports = Order;
+module.exports = car;
