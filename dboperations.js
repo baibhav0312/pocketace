@@ -1,24 +1,12 @@
-var config = require('./dbconfig');
-const sql = require('mssql');
+import config from './dbconfig';
+import { connect, Int, long, double, NVarChar } from 'mssql'
 
-
-async function getOrders() {
+async function getOrder(transactionId) {
     try {
-        let pool = await sql.connect(config);
-        let products = await pool.request().query("SELECT * from Orders");
-        return products.recordsets;
-    }
-    catch (error) {
-        console.log(error);
-    }
-}
-
-async function getOrder(orderId) {
-    try {
-        let pool = await sql.connect(config);
+        let pool = await connect(config);
         let product = await pool.request()
-            .input('input_parameter', sql.Int, orderId)
-            .query("SELECT * from Orders where Id = @input_parameter");
+            .input('input_parameter', long, transactionId)
+            .query("SELECT * from Products where transactionId = @input_parameter");
         return product.recordsets;
 
     }
@@ -27,17 +15,43 @@ async function getOrder(orderId) {
     }
 }
 
+async function gettype(type) {
+    try {
+        let pool = await connect(config);
+        let product = await pool.request()
+            .input('input_parameter', NVarChar, type)
+            .query("SELECT * from Products where Type = @input_parameter");
+        return product.recordsets;
 
-async function addOrder(order) {
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function sum(transaction_id) {
+    try {
+        let pool = await connect(config);
+        let product = await pool.request()
+            .input('input_parameter', long, transaction_id)
+            .query("SELECT sum(Amounts) from Products where transaction_id >= @input_parameter");
+        return product.recordsets;
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function addcar(order, transaction_id) {
 
     try {
-        let pool = await sql.connect(config);
+        let pool = await connect(config);
         let insertProduct = await pool.request()
-            .input('Id', sql.Int, order.Id)
-            .input('Title', sql.NVarChar, order.Title)
-            .input('Quantity', sql.Int, order.Quantity)
-            .input('Message', sql.NVarChar, order.Message)
-            .input('City', sql.NVarChar, order.City)
+            .input('transaction_id', long, transaction_id)
+            .input('Amount', double, order.Amount)
+            .input('Type', NVarChar, order.Type)
+            .input('Parent_ID', long, order.Parent_ID)
             .execute('InsertOrders');
         return insertProduct.recordsets;
     }
@@ -47,13 +61,7 @@ async function addOrder(order) {
 
 }
 
-
-
-
-
-
-module.exports = {
-    getOrders: getOrders,
-    getOrder : getOrder,
-    addOrder : addOrder
-}
+export const getOrder = getOrder;
+export const gettype = gettype;
+export const sum = sum;
+export const addcar = addcar;
